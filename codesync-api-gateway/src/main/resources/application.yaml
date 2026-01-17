@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: codesync-api-gateway
+  main:
+    web-application-type: reactive
+
+  cloud:
+    gateway:
+      match-trailing-slash: false  # ✅ Add this line
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173"
+            allowedMethods: [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+            allowedHeaders: "**"
+            allowCredentials: true
+            maxAge: 3600
+
+  redis:
+    host: localhost
+    port: 6379
+
+logging:
+  level:
+    org.springframework.cloud.gateway: TRACE
+    com.codesync.gateway: DEBUG
