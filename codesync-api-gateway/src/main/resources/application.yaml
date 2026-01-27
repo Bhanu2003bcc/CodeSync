@@ -6,16 +6,24 @@ spring:
 
   cloud:
     gateway:
-      match-trailing-slash: false  # ✅ Add this line
+      match-trailing-slash: false
       globalcors:
         add-to-simple-url-handler-mapping: true
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:5173"
-            allowedMethods: [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-            allowedHeaders: "**"
+        corsConfigurations:
+          # ⚠️ CORS only for API paths - WebSocket CORS is handled by Realtime Service
+          '[/api/**]':
+            allowedOrigins:
+              - http://localhost:5173
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
             allowCredentials: true
             maxAge: 3600
+
 
   redis:
     host: localhost
@@ -23,5 +31,26 @@ spring:
 
 logging:
   level:
-    org.springframework.cloud.gateway: TRACE
+    root: INFO
+
+    # Gateway core
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.route.RouteDefinitionLocator: DEBUG
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: DEBUG
+
+    # WebSocket routing
+    org.springframework.web.reactive.socket: DEBUG
+    org.springframework.web.reactive.socket.server: DEBUG
+    org.springframework.web.reactive.socket.client: DEBUG
+
+    # Reactor Netty (actual network layer)
+    reactor.netty.http.server: DEBUG
+    reactor.netty.http.client: DEBUG
+
+    # Your gateway code
     com.codesync.gateway: DEBUG
+
+
+
+#    org.springframework.cloud.gateway: TRACE
+#    com.codesync.gateway: DEBUG

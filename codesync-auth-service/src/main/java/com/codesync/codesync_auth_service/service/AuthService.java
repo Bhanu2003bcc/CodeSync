@@ -1,6 +1,5 @@
 package com.codesync.codesync_auth_service.service;
 
-
 import com.codesync.codesync_auth_service.dto.AuthResponse;
 import com.codesync.codesync_auth_service.dto.LoginRequest;
 import com.codesync.codesync_auth_service.dto.RegisterRequest;

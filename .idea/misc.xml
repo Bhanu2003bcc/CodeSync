@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/codesync-auth-service/pom.xml" />
         <option value="$PROJECT_DIR$/codesync-review-session-service/pom.xml" />
         <option value="$PROJECT_DIR$/codesync-realtime-service/pom.xml" />
+        <option value="$PROJECT_DIR$/comment-service/pom.xml" />
       </list>
     </option>
   </component>

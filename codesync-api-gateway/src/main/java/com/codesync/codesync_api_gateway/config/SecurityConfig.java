@@ -20,9 +20,12 @@ public class SecurityConfig {
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // ⚠️ CORS is already configured in application.yaml (globalcors)
+                // Enabling it here causes duplicate Access-Control-Allow-Origin headers
+                // which browsers reject as "CORS Multiple Origin Not Allowed"
+                .cors(ServerHttpSecurity.CorsSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .anyExchange().permitAll()  // ✅ Allow all - your JwtAuthFilter handles auth
+                        .anyExchange().permitAll() // ✅ Allow all - your JwtAuthFilter handles auth
                 )
                 .build();
     }

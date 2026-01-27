@@ -8,8 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="codesync-auth-service" />
-        <module name="codesync-review-session-service" />
+        <module name="comment-service" />
         <module name="codesync-api-gateway" />
+        <module name="codesync-review-session-service" />
       </profile>
       <profile name="Annotation profile for codesync-realtime-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -28,6 +29,7 @@
       <module name="codesync-auth-service" options="-parameters" />
       <module name="codesync-realtime-service" options="-parameters" />
       <module name="codesync-review-session-service" options="-parameters" />
+      <module name="comment-service" options="-parameters" />
     </option>
   </component>
 </project>
