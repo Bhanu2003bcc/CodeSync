@@ -69,7 +69,7 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
                     accessor.setSessionAttributes(sessionAttributes);
                 }
 
-                logger.info("✅ STOMP CONNECT authenticated: username={}, userId={}", username, userId);
+                logger.info("✅ STOMP CONNECT authenticated: username={}, userId={} ", username, userId);
 
             } catch (Exception e) {
                 logger.error("❌ Failed to parse JWT token: {}", e.getMessage());

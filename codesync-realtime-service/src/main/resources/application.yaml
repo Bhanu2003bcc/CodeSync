@@ -4,3 +4,8 @@ server:
 spring:
   application:
     name: codesync-realtime-service
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
