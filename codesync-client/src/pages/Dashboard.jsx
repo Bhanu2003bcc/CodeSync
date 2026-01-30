@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { fetchSessions } from "../api/sessionApi";
 import { useAuth } from "../auth/AuthContext";
 import CreateSession from "./CreateSession";
+import JoinSession from "./JoinSession";
 import SessionWorkspace from "./SessionWorkspace";
 
 export default function Dashboard() {
@@ -9,6 +10,7 @@ export default function Dashboard() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeSession, setActiveSession] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
 
   async function loadSessions() {
     try {
@@ -26,6 +28,18 @@ export default function Dashboard() {
       loadSessions();
     }
   }, [user, token]);
+
+  // Copy session ID to clipboard
+  function copySessionId(sessionId) {
+    navigator.clipboard.writeText(sessionId);
+    setCopiedId(sessionId);
+    setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  // Join a session by ID (from another user)
+  function handleJoinSession(sessionId) {
+    setActiveSession(sessionId);
+  }
 
   // Get user initials for avatar
   const initials = user?.username?.slice(0, 2) || "U";
@@ -53,6 +67,9 @@ export default function Dashboard() {
 
       {/* Create Session */}
       <CreateSession onCreated={loadSessions} />
+
+      {/* Join Session - NEW */}
+      <JoinSession onJoin={handleJoinSession} />
 
       {/* Sessions Section */}
       <section className="sessions-section">
@@ -88,6 +105,18 @@ export default function Dashboard() {
                   🔗 {session.repoUrl}
                 </div>
 
+                {/* Session ID for sharing */}
+                <div className="session-id-share">
+                  <span className="session-id-label">ID:</span>
+                  <code className="session-id-value">{session.id}</code>
+                  <button
+                    className="small secondary copy-btn"
+                    onClick={() => copySessionId(session.id)}
+                  >
+                    {copiedId === session.id ? "✓ Copied!" : "📋 Copy"}
+                  </button>
+                </div>
+
                 <div className="session-card-footer">
                   <button
                     className="small"
@@ -114,3 +143,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

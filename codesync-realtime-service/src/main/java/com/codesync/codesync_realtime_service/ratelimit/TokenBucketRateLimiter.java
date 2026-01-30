@@ -1,4 +1,4 @@
-package com.codesync.codesync_realtime_service.algorithms;
+package com.codesync.codesync_realtime_service.ratelimit;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisCallback;

@@ -1,10 +1,13 @@
 package com.codesync.codesync_realtime_service.controller;
 
 import com.codesync.codesync_realtime_service.algorithms.BloomFilter;
-import com.codesync.codesync_realtime_service.algorithms.TokenBucketRateLimiter;
+import com.codesync.codesync_realtime_service.model.WsEvent;
+import com.codesync.codesync_realtime_service.ratelimit.TokenBucketRateLimiter;
 import com.codesync.codesync_realtime_service.model.CommentCreatePayload;
 import com.codesync.codesync_realtime_service.model.CursorPayload;
 import com.codesync.codesync_realtime_service.presence.PresenceTracker;
+import com.codesync.codesync_realtime_service.realtime.RedisPublisher;
+import com.codesync.codesync_realtime_service.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,60 +16,105 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
+
 
 @Controller
 @RequiredArgsConstructor
 public class RealTimeMessageController {
 
+    private final RedisPublisher redisPublisher;
     private final TokenBucketRateLimiter rateLimiter;
     private final BloomFilter bloomFilter;
-    private final SimpMessagingTemplate messagingTemplate;
     private final PresenceTracker presenceTracker;
     private final RestTemplate restTemplate;
+
     private static final String COMMENT_SERVICE_URL =
             "http://localhost:8085/api/comments";
+
+
+    // =========================================================
+    // JOIN SESSION
+    // =========================================================
 
     @MessageMapping("/session/{sessionId}/join")
     public void joinSession(
             @DestinationVariable UUID sessionId,
-            // not strictly asking for X-username
             @Header(value = "X-Username") String username) {
-        System.out.println("This is username" +username);
+        System.out.println("This is username " +username);
         presenceTracker.userJoined(sessionId, username);
 
-        messagingTemplate.convertAndSend(
-                "/topic/session/" + sessionId,
-                (Object) Map.of(
-                        "type", "USER_JOINED",
-                        "username", username
+//        messagingTemplate.convertAndSend(
+//                "/topic/session/" + sessionId,
+//                (Object) Map.of(
+//                        "type", "USER_JOINED",
+//                        "username", username
+//                )
+//        );
+        String dest = "/topic/session/" + sessionId;
+
+        WsEvent event = new WsEvent();
+        event.setDestination(dest);
+        event.setPayload(
+                JsonUtil.toJson(
+                        Map.of(
+                                "type", "USER_JOINED",
+                                "username", username
+                        )
                 )
         );
+
+        redisPublisher.publish(JsonUtil.toJson(event));
     }
+
+
+    // =========================================================
+    // CURSOR UPDATE
+    // =========================================================
 
     @MessageMapping("/session/{sessionId}/cursor")
     public void cursorUpdate(
             @DestinationVariable UUID sessionId,
             CursorPayload payload,
             @Header("X-Username") String username) {
-
+        System.out.println("CURSOR HANDLER HIT");
         if (!rateLimiter.allowRequest(username)) return;
 
-        messagingTemplate.convertAndSend(
-                "/topic/session/" + sessionId + "/cursor",
-                (Object) Map.of(
-                        "username", username,
-                        "cursor", payload
+//        messagingTemplate.convertAndSend(
+//                "/topic/session/" + sessionId + "/cursor",
+//                (Object) Map.of(
+//                        "username", username,
+//                        "cursor", payload
+//                )
+//        );
+
+        String dest =
+                "/topic/session/" + sessionId + "/cursor";
+
+        WsEvent event = new WsEvent();
+        event.setDestination(dest);
+        event.setPayload(
+                JsonUtil.toJson(
+                        Map.of(
+                                "username", username,
+                                "cursor", payload
+                        )
                 )
         );
+
+        redisPublisher.publish(JsonUtil.toJson(event));
     }
 
     // Comment Service take info as input from here
+
+    // =========================================================
+    // CREATE COMMENT
+    // =========================================================
 
     @MessageMapping("/session/{sessionId}/comment")
     public void createComment(
@@ -106,9 +154,34 @@ public class RealTimeMessageController {
                         String.class
                 );
 
-        messagingTemplate.convertAndSend(
-                "/topic/session/" + sessionId + "/comments",
-                response.getBody()
-        );
+//        messagingTemplate.convertAndSend(
+//                "/topic/session/" + sessionId + "/comments",
+//                response.getBody()
+//        );
+        String dest =
+                "/topic/session/" + sessionId + "/comments";
+
+        WsEvent event = new WsEvent();
+        event.setDestination(dest);
+        event.setPayload(response.getBody());
+
+        System.out.println("PUBLISHING CURSOR EVENT");
+        redisPublisher.publish(JsonUtil.toJson(event));
     }
+
+    @MessageMapping("/session/{sessionId}/doc")
+    public void docUpdate(
+            @DestinationVariable UUID sessionId,
+            byte[] update) {
+
+        String dest =
+                "/topic/session/" + sessionId + "/doc";
+
+        WsEvent event = new WsEvent();
+        event.setDestination(dest);
+        event.setPayload(Base64.getEncoder().encodeToString(update));
+
+        redisPublisher.publish(JsonUtil.toJson(event));
+    }
+
 }
