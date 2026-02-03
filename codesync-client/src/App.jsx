@@ -1,28 +1,23 @@
-import { useState } from "react";
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 import Login from "./auth/Login";
-import Register from "./auth/Register";
+import OAuthCallback from "./auth/OAuthCallback";
 import Dashboard from "./pages/Dashboard";
-
-function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
-
-  return (
-    <div className="auth-container">
-      {isLogin ? (
-        <Login onSwitchToRegister={() => setIsLogin(false)} />
-      ) : (
-        <Register onSwitchToLogin={() => setIsLogin(true)} />
-      )}
-    </div>
-  );
-}
 
 function Router() {
   const { user } = useAuth();
 
+  // Check if this is OAuth callback
+  const isCallback = window.location.pathname === "/auth/callback";
+  if (isCallback) {
+    return <OAuthCallback />;
+  }
+
   if (!user) {
-    return <AuthPage />;
+    return (
+      <div className="auth-container">
+        <Login />
+      </div>
+    );
   }
 
   return <Dashboard />;

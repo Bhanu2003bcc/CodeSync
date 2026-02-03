@@ -20,11 +20,15 @@ public class User {
     private UUID id;
 
     @Column(unique = true, nullable = false)
-    private String email;
+    private String githubId;
 
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
-    private String password;
+    private String email;
+
+    private String avatarUrl;
+
+    @Column(length = 1000)
+    private String githubAccessToken;
 }

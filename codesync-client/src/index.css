@@ -539,6 +539,62 @@ button.small {
   color: white;
 }
 
+/* GitHub Login Button */
+.github-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-lg);
+  background: #24292e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.github-login-btn:hover {
+  background: #2d3339;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.github-login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.github-login-btn svg {
+  flex-shrink: 0;
+}
+
+.auth-footer {
+  margin-top: var(--space-xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.auth-footer p {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.auth-loading {
+  text-align: center;
+  padding: var(--space-xl);
+}
+
+.auth-loading p {
+  color: var(--color-text-secondary);
+  animation: pulse 1.5s infinite;
+}
+
 /* ============================================
    Dashboard Layout
    ============================================ */

@@ -32,6 +32,14 @@ public class GatewayRoutesConfig {
                                                 .path("/api/comments/**")
                                                 .uri("http://localhost:8085"))
 
+                                .route("document-service", r -> r
+                                                 .path("/api/documents/**")
+                                                 .uri("http://localhost:8087"))
+
+                                .route("github-service", r -> r
+                                                 .path("/api/github/**")
+                                                 .uri("http://localhost:8088"))
+
                                 // ✅ WebSocket/SockJS route - handles both HTTP and WebSocket upgrade
                                 .route("realtime-ws", r -> r
                                                 .path("/ws/**")
