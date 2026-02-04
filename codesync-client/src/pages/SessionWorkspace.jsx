@@ -184,6 +184,12 @@ export default function SessionWorkspace({ sessionId, repoUrl, onClose }) {
       return;
     }
 
+    // Validate that head and base are different
+    if (prHead.trim() === prBase.trim()) {
+      alert("❌ Head and base branches must be different!\n\nYou selected the same branch for both.");
+      return;
+    }
+
     setCreatingPR(true);
     try {
       const pr = await createPullRequest(
@@ -203,7 +209,14 @@ export default function SessionWorkspace({ sessionId, repoUrl, onClose }) {
       setShowPRModal(false);
       addActivity(`${user?.username} created PR #${pr.number}`, 'pr');
     } catch (e) {
-      alert(`❌ Failed to create PR: ${e.message}`);
+      // Show more helpful error message
+      let errorMsg = e.message;
+      if (errorMsg.includes("No commits between")) {
+        errorMsg = "No commits between the selected branches. Make sure you have changes to merge.";
+      } else if (errorMsg.includes("already exists")) {
+        errorMsg = "A pull request already exists for these branches.";
+      }
+      alert(`❌ Failed to create PR: ${errorMsg}`);
     } finally {
       setCreatingPR(false);
     }
@@ -946,11 +959,14 @@ export default function SessionWorkspace({ sessionId, repoUrl, onClose }) {
             <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
               <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', marginBottom: '4px', color: '#a0aec0' }}>
-                  From (head) *
+                  From (head) * <span style={{ fontSize: '11px' }}>branch with changes</span>
                 </label>
-                <select
+                <input
+                  type="text"
+                  list="head-branches"
                   value={prHead}
                   onChange={(e) => setPRHead(e.target.value)}
+                  placeholder="e.g., feature-branch"
                   style={{
                     width: '100%',
                     padding: '10px',
@@ -959,21 +975,24 @@ export default function SessionWorkspace({ sessionId, repoUrl, onClose }) {
                     background: '#1a202c',
                     color: '#fff'
                   }}
-                >
-                  <option value="">Select branch</option>
+                />
+                <datalist id="head-branches">
                   {branches.map(b => (
-                    <option key={b} value={b}>{b}</option>
+                    <option key={b} value={b} />
                   ))}
-                </select>
+                </datalist>
               </div>
 
               <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', marginBottom: '4px', color: '#a0aec0' }}>
-                  To (base) *
+                  To (base) * <span style={{ fontSize: '11px' }}>merge target</span>
                 </label>
-                <select
+                <input
+                  type="text"
+                  list="base-branches"
                   value={prBase}
                   onChange={(e) => setPRBase(e.target.value)}
+                  placeholder="e.g., main"
                   style={{
                     width: '100%',
                     padding: '10px',
@@ -982,13 +1001,27 @@ export default function SessionWorkspace({ sessionId, repoUrl, onClose }) {
                     background: '#1a202c',
                     color: '#fff'
                   }}
-                >
+                />
+                <datalist id="base-branches">
                   {branches.map(b => (
-                    <option key={b} value={b}>{b}</option>
+                    <option key={b} value={b} />
                   ))}
-                </select>
+                </datalist>
               </div>
             </div>
+
+            {branches.length <= 1 && (
+              <div style={{
+                background: '#744210',
+                color: '#fbd38d',
+                padding: '10px',
+                borderRadius: '4px',
+                marginBottom: '16px',
+                fontSize: '13px'
+              }}>
+                ⚠️ <strong>Only one branch found.</strong> To create a PR, you need a separate feature branch with commits. Create a new branch on GitHub first, then commit changes there.
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
               <button

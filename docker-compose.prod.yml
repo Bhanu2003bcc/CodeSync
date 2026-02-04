@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./codesync-api-gateway
+    container_name: codereview-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - auth-service
+      - session-service
+    restart: always
+    networks:
+      - codereview-network
+
+  auth-service:
+    build: ./codesync-auth-service
+    container_name: codereview-auth
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=${DATABASE_URL}
+      - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL}
+    restart: always
+    networks:
+      - codereview-network
+
+  session-service:
+    build: ./codesync-review-session-service
+    container_name: codereview-session
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=${DATABASE_URL}
+      - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+    restart: always
+    networks:
+      - codereview-network
+
+  realtime-service:
+    build: ./codesync-realtime-service
+    container_name: codereview-realtime
+    ports:
+      - "8084:8084"
+    restart: always
+    networks:
+      - codereview-network
+
+  document-service:
+    build: ./codesync-document-service
+    container_name: codereview-document
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_DATASOURCE_URL=${DATABASE_URL}
+      - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+    restart: always
+    networks:
+      - codereview-network
+
+  github-service:
+    build: ./codesync-github-service
+    container_name: codereview-github
+    ports:
+      - "8088:8088"
+    environment:
+      - SPRING_DATASOURCE_URL=${DATABASE_URL}
+      - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+      - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+    restart: always
+    networks:
+      - codereview-network
+
+networks:
+  codereview-network:
+    driver: bridge

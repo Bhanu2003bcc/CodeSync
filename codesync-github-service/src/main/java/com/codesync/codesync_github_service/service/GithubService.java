@@ -90,16 +90,76 @@ public class GithubService {
                         String body,
                         String token) {
 
-                return github.post()
-                                .uri("/repos/{o}/{r}/pulls", owner, repo)
-                                .header("Authorization", "Bearer " + token)
-                                .bodyValue(Map.of(
-                                                "title", title,
-                                                "head", head,
-                                                "base", base,
-                                                "body", body != null ? body : ""))
-                                .retrieve()
-                                .bodyToMono(Map.class)
-                                .block();
+                try {
+                        return github.post()
+                                        .uri("/repos/{o}/{r}/pulls", owner, repo)
+                                        .header("Authorization", "Bearer " + token)
+                                        .bodyValue(Map.of(
+                                                        "title", title,
+                                                        "head", head,
+                                                        "base", base,
+                                                        "body", body != null ? body : ""))
+                                        .retrieve()
+                                        .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                                                        response -> response.bodyToMono(String.class)
+                                                                        .flatMap(errorBody -> {
+                                                                                throw new RuntimeException(
+                                                                                                "GitHub API error: "
+                                                                                                                + errorBody);
+                                                                        }))
+                                        .bodyToMono(Map.class)
+                                        .block();
+                } catch (Exception e) {
+                        throw new RuntimeException("Failed to create PR: " + e.getMessage(), e);
+                }
+        }
+
+        /**
+         * Create a new branch from an existing branch
+         */
+        public Map createBranch(
+                        String owner,
+                        String repo,
+                        String newBranchName,
+                        String sourceBranch,
+                        String token) {
+
+                try {
+                        // Step 1: Get the SHA of the source branch
+                        Map branchInfo = github.get()
+                                        .uri("/repos/{o}/{r}/git/ref/heads/{branch}", owner, repo, sourceBranch)
+                                        .header("Authorization", "Bearer " + token)
+                                        .retrieve()
+                                        .bodyToMono(Map.class)
+                                        .block();
+
+                        Map object = (Map) branchInfo.get("object");
+                        String sha = (String) object.get("sha");
+
+                        // Step 2: Create a new ref (branch) pointing to that SHA
+                        Map result = github.post()
+                                        .uri("/repos/{o}/{r}/git/refs", owner, repo)
+                                        .header("Authorization", "Bearer " + token)
+                                        .bodyValue(Map.of(
+                                                        "ref", "refs/heads/" + newBranchName,
+                                                        "sha", sha))
+                                        .retrieve()
+                                        .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(),
+                                                        response -> response.bodyToMono(String.class)
+                                                                        .flatMap(errorBody -> {
+                                                                                throw new RuntimeException(
+                                                                                                "GitHub API error: "
+                                                                                                                + errorBody);
+                                                                        }))
+                                        .bodyToMono(Map.class)
+                                        .block();
+
+                        return Map.of(
+                                        "name", newBranchName,
+                                        "sha", sha,
+                                        "success", true);
+                } catch (Exception e) {
+                        throw new RuntimeException("Failed to create branch: " + e.getMessage(), e);
+                }
         }
 }

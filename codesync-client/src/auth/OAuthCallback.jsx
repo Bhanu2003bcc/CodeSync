@@ -28,8 +28,8 @@ export default function OAuthCallback() {
         return (
             <div className="auth-card">
                 <div className="auth-logo">
-                    <div className="auth-logo-icon">⚡</div>
-                    <h1>CodeSync</h1>
+                    <div className="auth-logo-icon">🔀</div>
+                    <h1>CodeReview</h1>
                 </div>
                 <div className="auth-error">
                     <h2>Authentication Failed</h2>
@@ -43,8 +43,8 @@ export default function OAuthCallback() {
     return (
         <div className="auth-card">
             <div className="auth-logo">
-                <div className="auth-logo-icon">⚡</div>
-                <h1>CodeSync</h1>
+                <div className="auth-logo-icon">🔀</div>
+                <h1>CodeReview</h1>
             </div>
             <div className="auth-loading">
                 <p>Completing authentication...</p>

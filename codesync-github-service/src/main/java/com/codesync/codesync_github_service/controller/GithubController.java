@@ -1,11 +1,11 @@
 package com.codesync.codesync_github_service.controller;
 
 import com.codesync.codesync_github_service.dtos.CommitRequest;
+import com.codesync.codesync_github_service.dtos.CreateBranchRequest;
 import com.codesync.codesync_github_service.dtos.CreatePRRequest;
 import com.codesync.codesync_github_service.dtos.FileNode;
 import com.codesync.codesync_github_service.dtos.RepoInfo;
 import com.codesync.codesync_github_service.service.GithubCommitService;
-import com.codesync.codesync_github_service.service.GithubService;
 import com.codesync.codesync_github_service.service.GithubService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,6 +116,19 @@ public class GithubController {
                 req.getHead(),
                 req.getBase(),
                 req.getBody(),
+                githubToken);
+    }
+
+    @PostMapping("/branch")
+    public Map createBranch(
+            @RequestBody CreateBranchRequest req,
+            @RequestHeader("X-User-Id") String userId) {
+        String githubToken = getGitHubToken(userId);
+        return service.createBranch(
+                req.getOwner(),
+                req.getRepo(),
+                req.getNewBranchName(),
+                req.getSourceBranch(),
                 githubToken);
     }
 

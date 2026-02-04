@@ -34,13 +34,13 @@ export default function Register({ onSwitchToLogin }) {
   return (
     <div className="auth-card">
       <div className="auth-logo">
-        <div className="auth-logo-icon">⚡</div>
-        <h1>CodeSync</h1>
+        <div className="auth-logo-icon">🔀</div>
+        <h1>CodeReview</h1>
       </div>
 
       <div className="auth-title">
         <h2>Create account</h2>
-        <p>Join CodeSync to start collaborating</p>
+        <p>Join CodeReview to start collaborating</p>
       </div>
 
       {error && <div className="auth-error">{error}</div>}

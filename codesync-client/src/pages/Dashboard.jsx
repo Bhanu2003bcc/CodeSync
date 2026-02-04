@@ -65,8 +65,8 @@ export default function Dashboard() {
       {/* Header */}
       <header className="dashboard-header">
         <div className="dashboard-brand">
-          <div className="auth-logo-icon">⚡</div>
-          <h1>CodeSync</h1>
+          <div className="auth-logo-icon">🔀</div>
+          <h1>CodeReview</h1>
         </div>
 
         <div className="dashboard-user">

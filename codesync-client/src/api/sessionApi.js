@@ -218,10 +218,12 @@ export async function deleteSession(sessionId) {
  */
 export async function getSession(sessionId) {
   const res = await fetch(`${API_BASE_URL}/api/sessions/${sessionId}`, {
-    headers: getAuthHeaders(false)
+    headers: getAuthHeaders()  // Include auth headers
   });
 
   if (!res.ok) {
+    const errorText = await res.text();
+    console.error("getSession failed:", res.status, errorText);
     throw new Error("Failed to fetch session");
   }
   return res.json();
