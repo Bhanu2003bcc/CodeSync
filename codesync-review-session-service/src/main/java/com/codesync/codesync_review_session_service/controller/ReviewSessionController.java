@@ -47,5 +47,16 @@ public class ReviewSessionController {
         service.addParticipant(id, userId, req.getUserId());
     }
 
-}
+    @DeleteMapping("/{id}")
+    public void delete(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID userId) {
+        service.deleteSession(id, userId);
+    }
 
+    @GetMapping("/{id}")
+    public ReviewSession getSession(@PathVariable UUID id) {
+        return service.getSession(id);
+    }
+
+}

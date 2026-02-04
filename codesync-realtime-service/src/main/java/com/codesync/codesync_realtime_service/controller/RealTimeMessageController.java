@@ -216,4 +216,24 @@ public class RealTimeMessageController {
                 }
         }
 
+        // =========================================================
+        // FILE CHANGE (broadcast when user opens a file)
+        // =========================================================
+
+        @MessageMapping("/session/{sessionId}/file-change")
+        public void fileChange(
+                        @DestinationVariable UUID sessionId,
+                        String payload) {
+
+                System.out.println("[FILE] File change received: " + payload);
+
+                String dest = "/topic/session/" + sessionId + "/file-change";
+
+                WsEvent event = new WsEvent();
+                event.setDestination(dest);
+                event.setPayload(payload);
+
+                redisPublisher.publish(JsonUtil.toJson(event));
+        }
+
 }

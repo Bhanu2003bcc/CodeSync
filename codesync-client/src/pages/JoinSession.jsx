@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { getSession } from "../api/sessionApi";
 
 export default function JoinSession({ onJoin }) {
     const [sessionId, setSessionId] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    function handleJoin(e) {
+    async function handleJoin(e) {
         e.preventDefault();
         setError("");
 
@@ -23,8 +25,17 @@ export default function JoinSession({ onJoin }) {
             return;
         }
 
-        onJoin(trimmedId);
-        setSessionId("");
+        setLoading(true);
+        try {
+            // Fetch session from server to get repoUrl
+            const session = await getSession(trimmedId);
+            onJoin(trimmedId, session.repoUrl);
+            setSessionId("");
+        } catch (err) {
+            setError("Session not found or you don't have access.");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -38,8 +49,11 @@ export default function JoinSession({ onJoin }) {
                     placeholder="Paste session ID here (e.g., abc123-def456-...)"
                     value={sessionId}
                     onChange={(e) => setSessionId(e.target.value)}
+                    disabled={loading}
                 />
-                <button type="submit">Join Session</button>
+                <button type="submit" disabled={loading}>
+                    {loading ? "Joining..." : "Join Session"}
+                </button>
             </form>
 
             {error && <p className="auth-error">{error}</p>}

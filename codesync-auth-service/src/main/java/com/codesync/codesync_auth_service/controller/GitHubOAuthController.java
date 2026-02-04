@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @RestController
@@ -50,8 +52,11 @@ public class GitHubOAuthController {
                     .build();
 
         } catch (Exception e) {
-            // Redirect to frontend with error
-            String errorUrl = config.getFrontendUrl() + "/auth/callback?error=" + e.getMessage();
+            // URL-encode the error message to prevent URI syntax issues
+            String encodedError = URLEncoder.encode(
+                    e.getMessage() != null ? e.getMessage() : "Unknown error",
+                    StandardCharsets.UTF_8);
+            String errorUrl = config.getFrontendUrl() + "/auth/callback?error=" + encodedError;
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create(errorUrl))
                     .build();

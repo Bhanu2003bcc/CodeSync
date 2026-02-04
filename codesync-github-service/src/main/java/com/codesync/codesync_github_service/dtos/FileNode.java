@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class FileNode {
+    private String name;
     private String path;
     private String type;
 }

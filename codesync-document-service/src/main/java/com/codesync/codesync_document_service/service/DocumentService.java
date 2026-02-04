@@ -1,6 +1,5 @@
 package com.codesync.codesync_document_service.service;
 
-
 import com.codesync.codesync_document_service.model.DocumentSnapshot;
 import com.codesync.codesync_document_service.repository.DocumentRepository;
 import jakarta.transaction.Transactional;
@@ -18,12 +17,11 @@ public class DocumentService {
 
     public void save(UUID sessionId, byte[] snapshot) {
 
-        DocumentSnapshot doc =
-                DocumentSnapshot.builder()
-                        .sessionId(sessionId)
-                        .snapshot(snapshot)
-                        .updatedAt(Instant.now())
-                        .build();
+        DocumentSnapshot doc = DocumentSnapshot.builder()
+                .sessionId(sessionId)
+                .snapshot(snapshot)
+                .updatedAt(Instant.now())
+                .build();
 
         repo.save(doc);
     }

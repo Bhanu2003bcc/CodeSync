@@ -9,8 +9,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ParticipantRepository extends JpaRepository<SessionParticipant, SessionParticipantId> {
-    Optional<SessionParticipant>
-    findBySessionIdAndUserId(UUID sessionId, UUID userId);
+    Optional<SessionParticipant> findBySessionIdAndUserId(UUID sessionId, UUID userId);
 
     List<SessionParticipant> findByUserId(UUID userId);
+
+    void deleteBySessionId(UUID sessionId);
 }

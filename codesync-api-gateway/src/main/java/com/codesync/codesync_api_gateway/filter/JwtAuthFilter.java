@@ -43,8 +43,11 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         }
 
         // ✅ 2. Skip WebSocket paths FIRST (before auth check)
-        // ✅ 3. Skip public auth endpoints
-        if (path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register") || path.startsWith("/ws")) {
+        // ✅ 3. Skip public auth endpoints (including GitHub OAuth)
+        if (path.startsWith("/api/auth/login") ||
+                path.startsWith("/api/auth/register") ||
+                path.startsWith("/api/auth/github") ||
+                path.startsWith("/ws")) {
             logger.info("✓ Skipping authentication for public/WebSocket path: {}", path);
             return chain.filter(exchange);
         }

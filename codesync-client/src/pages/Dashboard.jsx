@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchSessions } from "../api/sessionApi";
+import { fetchSessions, deleteSession } from "../api/sessionApi";
 import { useAuth } from "../auth/AuthContext";
 import CreateSession from "./CreateSession";
 import JoinSession from "./JoinSession";
@@ -37,8 +37,24 @@ export default function Dashboard() {
   }
 
   // Join a session by ID (from another user)
-  function handleJoinSession(sessionId) {
-    setActiveSession(sessionId);
+  function handleJoinSession(sessionId, repoUrl = '') {
+    setActiveSession({ id: sessionId, repoUrl });
+  }
+
+  // Delete a session
+  async function handleDeleteSession(sessionId) {
+    if (!confirm("Are you sure you want to delete this session? This cannot be undone.")) {
+      return;
+    }
+    try {
+      await deleteSession(sessionId);
+      setSessions(sessions.filter(s => s.id !== sessionId));
+      if (activeSession?.id === sessionId) {
+        setActiveSession(null);
+      }
+    } catch (e) {
+      alert(`Failed to delete session: ${e.message}`);
+    }
   }
 
   // Get user initials for avatar
@@ -121,10 +137,17 @@ export default function Dashboard() {
                   <button
                     className="small"
                     onClick={() => setActiveSession(
-                      activeSession === session.id ? null : session.id
+                      activeSession?.id === session.id ? null : session
                     )}
                   >
-                    {activeSession === session.id ? "Close" : "Open"}
+                    {activeSession?.id === session.id ? "Close" : "Open"}
+                  </button>
+                  <button
+                    className="small danger"
+                    onClick={() => handleDeleteSession(session.id)}
+                    style={{ marginLeft: '8px', background: '#e53e3e' }}
+                  >
+                    🗑️ Delete
                   </button>
                 </div>
               </li>
@@ -136,7 +159,8 @@ export default function Dashboard() {
       {/* Active Session Workspace */}
       {activeSession && (
         <SessionWorkspace
-          sessionId={activeSession}
+          sessionId={activeSession.id}
+          repoUrl={activeSession.repoUrl}
           onClose={() => setActiveSession(null)}
         />
       )}
