@@ -1,0 +1,90 @@
+# Render Blueprint - Deploy all services at once
+# https://render.com/docs/blueprint-spec
+
+services:
+  # API Gateway
+  - type: web
+    name: codereview-gateway
+    runtime: docker
+    dockerfilePath: ./codesync-api-gateway/Dockerfile
+    dockerContext: ./codesync-api-gateway
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+    plan: free
+
+  # Auth Service
+  - type: web
+    name: codereview-auth
+    runtime: docker
+    dockerfilePath: ./codesync-auth-service/Dockerfile
+    dockerContext: ./codesync-auth-service
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+    plan: free
+
+  # Session Service
+  - type: web
+    name: codereview-session
+    runtime: docker
+    dockerfilePath: ./codesync-review-session-service/Dockerfile
+    dockerContext: ./codesync-review-session-service
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+    plan: free
+
+  # Realtime Service
+  - type: web
+    name: codereview-realtime
+    runtime: docker
+    dockerfilePath: ./codesync-realtime-service/Dockerfile
+    dockerContext: ./codesync-realtime-service
+    plan: free
+
+  # Document Service
+  - type: web
+    name: codereview-document
+    runtime: docker
+    dockerfilePath: ./codesync-document-service/Dockerfile
+    dockerContext: ./codesync-document-service
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+    plan: free
+
+  # GitHub Service
+  - type: web
+    name: codereview-github
+    runtime: docker
+    dockerfilePath: ./codesync-github-service/Dockerfile
+    dockerContext: ./codesync-github-service
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+    plan: free
