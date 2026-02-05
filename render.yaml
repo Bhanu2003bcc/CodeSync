@@ -57,6 +57,15 @@ services:
     runtime: docker
     dockerfilePath: ./codesync-realtime-service/Dockerfile
     dockerContext: ./codesync-realtime-service
+    envVars:
+      - key: REDIS_HOST
+        sync: false
+      - key: REDIS_PORT
+        sync: false
+      - key: REDIS_PASSWORD
+        sync: false
+      - key: REDIS_SSL
+        value: "true"
     plan: free
 
   # Document Service
