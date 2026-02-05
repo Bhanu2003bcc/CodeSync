@@ -6,9 +6,9 @@ spring:
     name: codesync-auth-service
 
   datasource:
-    url: jdbc:postgresql://aws-1-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0
-    username: postgres.uapqhpnndarzmcgtbiwv
-    password: DcdMIH3FmsnkMss3
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://aws-1-ap-south-1.pooler.supabase.com:6543/postgres?sslmode=require&prepareThreshold=0}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres.uapqhpnndarzmcgtbiwv}
+    password: ${SPRING_DATASOURCE_PASSWORD:DcdMIH3FmsnkMss3}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -20,7 +20,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 github:
-  client-id: Ov23lijbHInilwhOf566
-  client-secret: c5a8d43d633645be3fe28367fa4f19a0ccee8c6f
-  redirect-uri: http://localhost:8080/api/auth/github/callback
-  frontend-url: http://localhost:5173
+  client-id: ${GITHUB_CLIENT_ID:Ov23lijbHInilwhOf566}
+  client-secret: ${GITHUB_CLIENT_SECRET:c5a8d43d633645be3fe28367fa4f19a0ccee8c6f}
+  redirect-uri: ${GITHUB_REDIRECT_URI:http://localhost:8080/api/auth/github/callback}
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+
