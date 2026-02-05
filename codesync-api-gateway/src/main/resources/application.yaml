@@ -10,10 +10,11 @@ spring:
       globalcors:
         add-to-simple-url-handler-mapping: true
         corsConfigurations:
-          # ⚠️ CORS only for API paths - WebSocket CORS is handled by Realtime Service
+          # CORS for API paths
           '[/api/**]':
             allowedOrigins:
               - http://localhost:5173
+              - ${FRONTEND_URL:http://localhost:5173}
             allowedMethods:
               - GET
               - POST
@@ -23,6 +24,7 @@ spring:
             allowedHeaders: "*"
             allowCredentials: true
             maxAge: 3600
+
 
 
   redis:
