@@ -1,4 +1,4 @@
-<img width="1056" height="576" alt="screenshot-2026-05-08_10-41-56" src="https://github.com/user-attachments/assets/56b89ba6-dcc5-46ab-adb4-9a453a4611bc" />CodeSync: Real-Time Collaborative Microservices Platform
+CodeSync: Real-Time Collaborative Microservices Platform
 Overview
 
 CodeSync is a high-performance, distributed platform designed for real-time collaborative code reviews and pair programming. It solves the challenge of synchronization drift in remote collaboration by utilizing an event-driven architecture and specialized data types to ensure all participants maintain a consistent state with sub-50ms latency.  
